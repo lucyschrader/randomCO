@@ -13,7 +13,7 @@ config = {
     "attempts": 3,
     "query": "*",
     "fields":"id,title,production,evidenceFor,identification,hasRepresentation,_meta",
-    "max_records": 20
+    "max_records": 4000
 }
 
 
@@ -39,14 +39,14 @@ def page_through_results(record_count):
     # Split the result set up into pages of 1000
     if config.get("max_records") and (config.get("max_records") < record_count):
         record_count = config.get("max_records")
-    page_count = ceil(record_count/10)
+    page_count = ceil(record_count/1000)
     for i in range(page_count):
         retrieve_page(i)
 
 
 def retrieve_page(page):
     # Get a page of 1000 records at a time
-    start_int = page * 10
+    start_int = page * 1000
     page_search = Search(quiet=config.get("quiet"),
                          sleep=config.get("sleep"),
                          api_key=config.get("api_key"),
@@ -55,7 +55,7 @@ def retrieve_page(page):
                          attempts=config.get("attempts"),
                          endpoint="object",
                          fields="id,pid,title,production,evidenceFor,identification,hasRepresentation,_meta",
-                         size=10,
+                         size=1000,
                          start=start_int)
 
     page_search.send_query()
@@ -73,18 +73,23 @@ def save_page_records(records):
 def write_to_file(records):
     # Write a page of records to the storage file
     # Currently not working - can write but not read and combine
-    with open(record_file, "w+", encoding="utf-8") as outfile:
-        try:
-            file_data = json.load(outfile)
-            print("Read data: ", [record["pid"] for record in file_data])
-            file_data.extend(records)
-        except json.decoder.JSONDecodeError as error:
-            print(error)
-            file_data = records
-        print("Write data: ", [record["pid"] for record in file_data])
-        outfile.seek(0)
+    if not os.path.exists(record_file):
+        append_data = False
+        outfile = open(record_file, "x")
+        outfile.close()
+        print("Storage file created")
+    else:
+        append_data = True
 
-        json.dump(file_data, outfile)
+    with open(record_file, "r+") as outfile:
+        if append_data:
+            file_data = json.load(outfile)
+            # print("Read data: ", [record["pid"] for record in file_data])
+            records.extend(file_data)
+
+        # print("Write data: ", [record["pid"] for record in records])
+        outfile.seek(0)
+        json.dump(records, outfile)
 
 
 def load_record_file():
@@ -92,7 +97,7 @@ def load_record_file():
     try:
         with open(record_file) as openfile:
             memo = json.load(openfile)
-            print("Load data: ", [record["pid"] for record in memo])
+            # print("Load data: ", [record["pid"] for record in memo])
             return memo
     except IOError:
         return False

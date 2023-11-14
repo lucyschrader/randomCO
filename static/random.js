@@ -7,6 +7,9 @@ let elapsedTime = 0;
 const tickSecond = () => {
     elapsedTime += 1;
     let progressPercentage = Math.round((elapsedTime / refreshPeriod) * 100);
+    if (progressPercentage > 100) {
+        progressPercentage = 100;
+    }
     changeProgress(progressPercentage);
     if (elapsedTime === refreshPeriod) {
         sleep(1000).then(() => { location.reload(); })
