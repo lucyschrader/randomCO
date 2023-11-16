@@ -1,6 +1,6 @@
 import random
 from flask import Flask, render_template, session, redirect, url_for, request, g
-from api.storage import get_records, load_record_file
+from api.storage import get_records
 from api import auth
 
 app = Flask(__name__)
@@ -10,7 +10,7 @@ app.config.from_mapping(
 
 app.register_blueprint(auth.bp)
 
-get_records()
+record_data = get_records()
 
 
 @app.route('/')
@@ -35,12 +35,11 @@ def home():
 
 
 def choose_random_record():
-    records = load_record_file()
-    if len(records) > 0:
-        random_record = random.choice(records)
+    if len(record_data) > 0:
+        random_record = random.choice(record_data)
         print("Selected {}".format(random_record["pid"]))
 
-        record_count = len(records)
+        record_count = len(record_data)
 
         return random_record, record_count
     else:
