@@ -1,8 +1,6 @@
 import os
 from askCO import Scroll
 
-record_data = None
-
 config = {
     "quiet": True,
     "sleep": 0.1,
@@ -11,11 +9,8 @@ config = {
     "attempts": 3,
     "query": "*",
     "fields":"pid,id,title,production,evidenceFor,identification,hasRepresentation,_meta",
-    "max_records": None
+    "max_records": -1
 }
-
-if os.environ.get("TP_RANDOM_MAX_RECORDS"):
-    config["max_records"] = os.environ.get("TP_RANDOM_MAX_RECORDS")
 
 
 def get_records():
