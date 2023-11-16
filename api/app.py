@@ -1,7 +1,20 @@
+import os
 import random
 from flask import Flask, render_template, session, redirect, url_for, request, g
-from api.storage import get_records
+from askCO import Scroll
 from api import auth
+
+config = {
+    "quiet": True,
+    "sleep": 0.1,
+    "api_key": os.environ.get("TPAK_RANDOM"),
+    "timeout": 5,
+    "attempts": 3,
+    "query": "*",
+    "fields": "pid,id,title,production,evidenceFor,identification,hasRepresentation,_meta",
+    "max_records": -1,
+    "record_data": None
+}
 
 app = Flask(__name__)
 app.config.from_mapping(
@@ -10,36 +23,45 @@ app.config.from_mapping(
 
 app.register_blueprint(auth.bp)
 
-record_data = get_records()
-
 
 @app.route('/')
 @auth.auth_required
 def home():
-    record, record_count = choose_random_record()
-    if record:
-        image_url = record["hasRepresentation"][0]["previewUrl"]
-        iiif_url = record["hasRepresentation"][0]["iiifUrl"]
-
-        record_metadata = extract_metadata(record)
-
-        return render_template("display.html",
-                               record=record,
-                               image_url=image_url,
-                               iiif_url=iiif_url,
-                               record_metadata=record_metadata,
-                               record_count=record_count)
-
+    check_for_records()
+    if not g.record_data:
+        return render_template("startup.html")
     else:
-        return render_template("restart.html")
+        record, record_count = choose_random_record()
+        if record:
+            image_url = record["hasRepresentation"][0]["previewUrl"]
+            iiif_url = record["hasRepresentation"][0]["iiifUrl"]
+
+            record_metadata = extract_metadata(record)
+
+            return render_template("display.html",
+                                   record=record,
+                                   image_url=image_url,
+                                   iiif_url=iiif_url,
+                                   record_metadata=record_metadata,
+                                   record_count=record_count)
+
+        else:
+            return render_template("restart.html")
+
+
+def check_for_records():
+    record_data = config.get("record_data")
+    if not record_data:
+        g.record_data = None
+    else:
+        g.record_data = record_data
 
 
 def choose_random_record():
-    if len(record_data) > 0:
-        random_record = random.choice(record_data)
+    record_count = len(g.record_data)
+    if record_count > 0:
+        random_record = random.choice(g.record_data)
         print("Selected {}".format(random_record["pid"]))
-
-        record_count = len(record_data)
 
         return random_record, record_count
     else:
@@ -118,6 +140,42 @@ def extract_metadata(record):
 @app.route('/reload')
 def reload():
     return redirect(url_for("home"))
+
+
+@app.route('/harvest')
+def harvest_records():
+    record_data = get_records()
+    if record_data:
+        return {"records": "success"}
+    else:
+        print("Error getting records.")
+        return {"records": "failure"}
+
+
+def get_records():
+    # Find out how many records you need to page through
+    if config.get("api_key"):
+        scroll = Scroll(quiet=config.get("quiet"),
+                        sleep=config.get("sleep"),
+                        api_key=config.get("api_key"),
+                        query=config.get("query"),
+                        timeout=config.get("timeout"),
+                        attempts=config.get("attempts"),
+                        endpoint="object",
+                        fields=config.get("fields"),
+                        exists="hasRepresentation",
+                        size=1000,
+                        duration=1,
+                        max_records=config["max_records"])
+        scroll.send_query()
+        if not scroll.error_message:
+            config["record_data"] = scroll.records
+            return True
+        else:
+            return scroll.error_message, scroll.status_code
+    else:
+        print("No API key!")
+        return None
 
 
 if __name__ == '__main__':
