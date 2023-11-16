@@ -1,0 +1,78 @@
+@font-face {
+	font-family: 'national-reg';
+	src: url("fonts/National2Web-Regular.woff")format("woff");
+}
+
+@font-face {
+	font-family: 'national-bold';
+	src: url("fonts/National2Web-Bold.woff")format("woff");
+}
+
+body {
+    font-family: 'national-reg', serif;
+    background-color: #f9f9f2;
+    min-height: 100vh;
+}
+
+h1, h2, h3, h4, p.title {
+	font-family: 'national-bold', serif;
+}
+
+.header {
+    background-color: #00a2db;
+    padding: 1em 0 1em 0;
+}
+.header .title {
+    color: #fff;
+}
+
+.header-link {
+    color: #fff;
+}
+
+.ticker {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-top: 0.7em;
+    padding-bottom: 0.5em;
+}
+
+.progress-container {
+    height: 0.8rem;
+    width: 32rem;
+    border-radius: 0.4rem;
+    background: #000;
+    margin-right: 0.5em;
+}
+
+.progress-container .progress {
+    height: 100%;
+    width: 0;
+    border-radius: 0.4rem;
+    background: #d96d00;
+    transition: width 0.4s ease;
+}
+
+img.collection-image {
+    min-height: 75vh;
+    max-height: 75vh;
+    padding-top: 0.5rem;
+    filter: drop-shadow(5px 5px 5px #dddddd);
+}
+
+img.contain {
+    object-fit: contain
+}
+
+.refresh-notice {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 70vh;
+}
+
+.refresh-text {
+    width: 40vw;
+    min-height: 20vh;
+}

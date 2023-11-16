@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block header %}
+    <div class="level-item">
+        <p class="title">Enter code to see the stuff!</p>
+    </div>
+{% endblock %}
+{% block content %}
+    <section>
+        <div class="container">
+            <div class="content">
+                <form action="/auth/authenticate" method="POST">
+                    <div class="field">
+                        <label class="label" for="password">Enter code to view</label>
+                        <div class="control">
+                            <input class="input" type="text" id="password" name="password">
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="control">
+                            <button class="button is-link" type="submit">Go!</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+{% endblock %}

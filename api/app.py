@@ -1,12 +1,20 @@
 import random
-from flask import Flask, render_template, url_for
+from flask import Flask, render_template, session, redirect, url_for, request, g
 from storage import get_records, load_record_file
+from api import auth
 
 app = Flask(__name__)
+app.config.from_mapping(
+    SECRET_KEY='dev'
+)
+
+app.register_blueprint(auth.bp)
+
 get_records()
 
 
 @app.route('/')
+@auth.auth_required
 def home():
     record, record_count = choose_random_record()
     if record:
@@ -110,8 +118,7 @@ def extract_metadata(record):
 
 @app.route('/reload')
 def reload():
-    # Check this is right
-    return url_for("home")
+    return redirect(url_for("home"))
 
 
 if __name__ == '__main__':

@@ -7,7 +7,7 @@ It uses Te Papa's API, the `askCO` package, and Flask.
 * [Flask](https://flask.palletsprojects.com/en/3.0.x/)
 
 ## Installation
-Clone this repo with `git clone TBD`. In a virtual environment import the `askCO` and `Flask` packages. This should give you `requests` too, but doublecheck.
+Clone this repo. In a virtual environment import the `askCO` and `Flask` packages. This should give you `requests` too, but doublecheck.
 
 Register for an API key save it as an environment variable called `TPAK-RANDOM`.
 
