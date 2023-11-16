@@ -18,7 +18,7 @@ config = {
 
 app = Flask(__name__)
 app.config.from_mapping(
-    SECRET_KEY='dev'
+    SECRET_KEY=os.environ.get("TP_RANDOM_SECRET_KEY")
 )
 
 app.register_blueprint(auth.bp)
@@ -153,7 +153,6 @@ def harvest_records():
 
 
 def get_records():
-    # Find out how many records you need to page through
     if config.get("api_key"):
         scroll = Scroll(quiet=config.get("quiet"),
                         sleep=config.get("sleep"),
