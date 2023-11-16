@@ -11,8 +11,11 @@ config = {
     "attempts": 3,
     "query": "*",
     "fields":"pid,id,title,production,evidenceFor,identification,hasRepresentation,_meta",
-    "max_records": 1000
+    "max_records": None
 }
+
+if os.environ.get("TP_RANDOM_MAX_RECORDS"):
+    config["max_records"] = os.environ.get("TP_RANDOM_MAX_RECORDS")
 
 
 def get_records():
