@@ -1,6 +1,6 @@
 import random
 from flask import Flask, render_template, session, redirect, url_for, request, g
-from storage import get_records, load_record_file
+from api.storage import get_records, load_record_file
 from api import auth
 
 app = Flask(__name__)
