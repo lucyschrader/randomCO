@@ -4,6 +4,19 @@ const noRefresh = false
 const refreshPeriod = 15;
 let elapsedTime = 0;
 
+const checkForRecords = () => {
+    let pollingInterval = 5000;
+    setInterval(sendRecCheck, pollingInterval)
+}
+
+async function sendRecCheck() {
+    let response = await fetch("/check");
+    let respJson = await response.json;
+    if (respJson["success"] === true) {
+        window.location.assign("/")
+    }
+}
+
 const tickSecond = () => {
     elapsedTime += 1;
     let progressPercentage = Math.round((elapsedTime / refreshPeriod) * 100);

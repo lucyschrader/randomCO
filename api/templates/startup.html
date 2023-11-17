@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block header %}
+    <div class="level-item">
+        <p class="title">Hold on while we get some records...</p>
+    </div>
+{% endblock %}
+{% block content %}
+    <section>
+        <div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
+    </section>
+    <script>checkForRecords()</script>
+{% endblock %}
