@@ -4,6 +4,33 @@ from flask import Flask, render_template, session, redirect, url_for, request, g
 from askCO import Scroll
 from api import auth
 
+
+def get_records():
+    if config.get("api_key"):
+        scroll = Scroll(quiet=config.get("quiet"),
+                        sleep=config.get("sleep"),
+                        api_key=config.get("api_key"),
+                        query=config.get("query"),
+                        timeout=config.get("timeout"),
+                        attempts=config.get("attempts"),
+                        endpoint="object",
+                        fields=config.get("fields"),
+                        exists="hasRepresentation",
+                        size=1000,
+                        duration=1,
+                        max_records=config["max_records"])
+        scroll.send_query()
+        if not scroll.error_message:
+            config["record_data"] = scroll.records
+            print("Ready to go!")
+            return True
+        else:
+            return scroll.error_message, scroll.status_code
+    else:
+        print("No API key!")
+        return None
+
+
 config = {
     "quiet": True,
     "sleep": 0.1,
@@ -16,9 +43,12 @@ config = {
     "record_data": None
 }
 
+get_records()
+
 app = Flask(__name__)
 app.config.from_mapping(
-    SECRET_KEY=os.environ.get("TP_RANDOM_SECRET_KEY")
+    # SECRET_KEY=os.environ.get("TP_RANDOM_SECRET_KEY")
+    SECRET_KEY="dev"
 )
 
 app.register_blueprint(auth.bp)
@@ -28,9 +58,7 @@ app.register_blueprint(auth.bp)
 @auth.auth_required
 def home():
     check_for_records()
-    if not g.record_data:
-        return render_template("startup.html")
-    else:
+    if g.record_data:
         record, record_count = choose_random_record()
         if record:
             image_url = record["hasRepresentation"][0]["previewUrl"]
@@ -45,8 +73,7 @@ def home():
                                    record_metadata=record_metadata,
                                    record_count=record_count)
 
-        else:
-            return render_template("restart.html")
+    return render_template("restart.html")
 
 
 def check_for_records():
@@ -140,41 +167,6 @@ def extract_metadata(record):
 @app.route('/reload')
 def reload():
     return redirect(url_for("home"))
-
-
-@app.route('/harvest')
-def harvest_records():
-    record_data = get_records()
-    if record_data:
-        return {"records": "success"}
-    else:
-        print("Error getting records.")
-        return {"records": "failure"}
-
-
-def get_records():
-    if config.get("api_key"):
-        scroll = Scroll(quiet=config.get("quiet"),
-                        sleep=config.get("sleep"),
-                        api_key=config.get("api_key"),
-                        query=config.get("query"),
-                        timeout=config.get("timeout"),
-                        attempts=config.get("attempts"),
-                        endpoint="object",
-                        fields=config.get("fields"),
-                        exists="hasRepresentation",
-                        size=1000,
-                        duration=1,
-                        max_records=config["max_records"])
-        scroll.send_query()
-        if not scroll.error_message:
-            config["record_data"] = scroll.records
-            return True
-        else:
-            return scroll.error_message, scroll.status_code
-    else:
-        print("No API key!")
-        return None
 
 
 if __name__ == '__main__':
