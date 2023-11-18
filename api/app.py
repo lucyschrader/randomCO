@@ -20,8 +20,8 @@ stored_records = "api/static/data/records_file.txt"
 def create_app():
     app = Flask(__name__)
     app.config.from_mapping(
-        SECRET_KEY=os.environ.get("TP_RANDOM_SECRET_KEY")
-        # SECRET_KEY="dev"
+        # SECRET_KEY=os.environ.get("TP_RANDOM_SECRET_KEY")
+        SECRET_KEY="dev"
     )
 
     app.register_blueprint(auth.bp)
