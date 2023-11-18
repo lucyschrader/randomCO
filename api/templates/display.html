@@ -25,32 +25,30 @@
                         </div>
                         <div class="box">
                             <!-- humanities metadata -->
-                            {% if record_metadata.makers %}
-                                <p><strong>Made by:</strong> {{ record_metadata.makers }}</p>
+                            {% if record.creator %}
+                                <p><strong>Made by:</strong> {{ record.creator }}</p>
                             {% endif %}
-                            {% if record_metadata.date_created %}
-                                <p><strong>Date created:</strong> {{ record_metadata.date_created }}</p>
+                            {% if record.dateCreated %}
+                                <p><strong>Date created:</strong> {{ record.dateCreated }}</p>
                             {% endif %}
-                            {% if record_metadata.place_created %}
-                                <p><strong>Place created:</strong> {{ record_metadata.place_created }}</p>
+                            {% if record.placeCreated %}
+                                <p><strong>Place created:</strong> {{ record.placeCreated }}</p>
                             {% endif %}
 
                             <!-- natural history metadata -->
-                            {% if record_metadata.collectors %}
-                                <p><strong>Collected by:</strong> {{ record_metadata.collectors }}</p>
+                            {% if record.collector %}
+                                <p><strong>Collected by:</strong> {{ record.collector }}</p>
                             {% endif %}
-                            {% if record_metadata.identifications %}
-                                {% for identification in record_metadata.identifications %}
-                                    <p>Identified as <em>{{ identification.taxon }}</em> by {{ identification.agent }}</p>
-                                {% endfor %}
+                            {% if record.identifiedBy %}
+                                <p>Identified as <em>{{ record.scientificName }}</em> by {{ record.identifiedBy }}</p>
                             {% endif %}
-                            <p><a href="https://collections.tepapa.govt.nz/object/{{ record.id }}">{{ record.id }}</a></p>
-                            <p>{{ record_metadata.rights }}</p>
+                            <p><a href="https://collections.tepapa.govt.nz/object/{{ record.irn }}">{{ record.irn }}</a></p>
+                            <p>{{ record.rights }}</p>
                         </div>
                     </div>
                     <div class="column is-two-thirds">
                         <figure class="image">
-                            <img class="contain collection-image" src="{{ image_url }}" alt="{{ record.title }}">
+                            <img class="contain collection-image" src="{{ record.imagePreview }}" alt="{{ record.title }}">
                         </figure>
                     </div>
                 </div>

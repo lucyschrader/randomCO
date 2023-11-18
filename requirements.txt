@@ -1,4 +1,4 @@
-askCO==0.1.4
+askCO==0.1.5
 colorama==0.4.6
 Flask==3.0.0
 itsdangerous==2.1.2
